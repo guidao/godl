@@ -87,7 +87,7 @@ func (this *HTTPPlugin) WaitMerge(cfg *Config) {
 }
 
 func (this *HTTPPlugin) tick() {
-	tk := time.NewTicker(2 * time.Second)
+	tk := time.NewTicker(1 * time.Second)
 	for {
 		select {
 		case <-tk.C:
@@ -106,6 +106,7 @@ func (this *HTTPPlugin) DownloadChunk(cfg *Config, chunk Chunk) {
 			continue
 		}
 		req.Header.Add("Range", chunk.Range())
+		req.Header.Add("Content-Type", "godl/0.1")
 		resp, err := this.client.Do(req)
 		if err != nil {
 			continue
@@ -120,6 +121,12 @@ func (this *HTTPPlugin) DownloadChunk(cfg *Config, chunk Chunk) {
 		step := make([]byte, length)
 		finish := false
 		this.process[chunk.sort].TotalSize = chunk.end - chunk.start
+		if chunk.start == 0 && chunk.end == 0 {
+			this.process[chunk.sort].TotalSize = this.size
+		}
+		if this.process[chunk.sort].TotalSize <= 0 {
+			this.process[chunk.sort].TotalSize = this.size - chunk.start
+		}
 		this.process[chunk.sort].Desc = filepath.Base(fd.Name())
 		for {
 			n, err := resp.Body.Read(step)

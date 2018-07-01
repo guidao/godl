@@ -1,18 +1,22 @@
 package download
 
 import (
+	//"fmt"
+	"github.com/gosuri/uiprogress"
 	"log"
 )
 
 type Config struct {
-	URL      string
-	FileName string
-	N        int
+	URL       string
+	FileName  string
+	N         int
+	HTTPProxy string
 }
 
 type Download struct {
-	Cfg     *Config
-	Plugins []Plugin
+	Cfg      *Config
+	Plugins  []Plugin
+	progress []*uiprogress.Bar
 }
 
 type Plugin interface {
@@ -39,6 +43,7 @@ func NewDownload(cfg *Config) *Download {
 }
 
 func (this *Download) Start() {
+	uiprogress.Start()
 	for _, pl := range this.Plugins {
 		if !pl.Match(this.Cfg.URL) {
 			continue
@@ -56,5 +61,14 @@ func (this *Download) Start() {
 }
 
 func (this *Download) Draw(progress []Progress) {
-
+	if this.progress == nil {
+		for _, p := range progress {
+			bar := uiprogress.AddBar(int(p.TotalSize))
+			bar.AppendCompleted().AppendElapsed()
+			this.progress = append(this.progress, bar)
+		}
+	}
+	for i, p := range progress {
+		this.progress[i].Set(int(p.CurrSize))
+	}
 }
