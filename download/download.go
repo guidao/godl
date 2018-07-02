@@ -63,8 +63,12 @@ func (this *Download) Start() {
 func (this *Download) Draw(progress []Progress) {
 	if this.progress == nil {
 		for _, p := range progress {
+			desc := p.Desc
 			bar := uiprogress.AddBar(int(p.TotalSize))
 			bar.AppendCompleted().AppendElapsed()
+			bar.PrependFunc(func(b *uiprogress.Bar) string {
+				return desc
+			})
 			this.progress = append(this.progress, bar)
 		}
 	}
