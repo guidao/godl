@@ -1,4 +1,3 @@
 * 一个golang下载工具
-** TODO 支持ftp下载
-** TODO 支持代理
+  - [] 支持FTP链接
    
