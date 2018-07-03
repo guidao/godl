@@ -7,10 +7,10 @@ import (
 )
 
 type Config struct {
-	URL       string
-	FileName  string
-	N         int
-	HTTPProxy string
+	URL      string
+	FileName string
+	N        int
+	Header   []string
 }
 
 type Download struct {

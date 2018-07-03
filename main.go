@@ -17,6 +17,7 @@ var godl = &cobra.Command{
 			URL:      args[0],
 			N:        viper.GetInt("thread"),
 			FileName: viper.GetString("name"),
+			Header:   viper.GetStringSlice("header"),
 		}
 		if cfg.URL == "" {
 			cfg.URL = viper.GetString("url")
@@ -36,6 +37,7 @@ func init() {
 	godl.Flags().IntP("thread", "n", 1, "-n 2")
 	godl.Flags().StringP("name", "o", "", "-o xxx.pdf")
 	godl.Flags().StringP("url", "u", "", "-u http://aaa.bbb/xxx.pdf")
+	godl.Flags().StringArrayP("header", "H", nil, "-H 'Content-Type: application/json' -H 'xxxx'")
 	viper.BindPFlags(godl.Flags())
 }
 

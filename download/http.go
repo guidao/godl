@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -106,7 +107,16 @@ func (this *HTTPPlugin) DownloadChunk(cfg *Config, chunk Chunk) {
 			continue
 		}
 		req.Header.Add("Range", chunk.Range())
-		req.Header.Add("Content-Type", "godl/0.1")
+		for _, header := range cfg.Header {
+			v := strings.SplitN(header, ":", 2)
+			if len(v) != 2 {
+				continue
+			}
+			req.Header.Add(v[0], v[2])
+		}
+		if req.Header.Get("Content-Type") == "" {
+			req.Header.Add("Content-Type", "godl/0.1")
+		}
 		resp, err := this.client.Do(req)
 		if err != nil {
 			continue
